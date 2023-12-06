@@ -3,9 +3,102 @@ import Meta from "../../components/meta/Meta";
 import "./Auth.scss";
 import Modal from "../../components/modal/Modal";
 import { useState } from "react";
+import { FaCircleQuestion } from "react-icons/fa6";
+import { day, month } from "../../faker/dmy";
+import {
+  createToast,
+  isValidEmail,
+  isValidMobile,
+} from "../../helpers/helpers";
+// import { toast } from "react-toastify";
+// import Swal from "sweetalert2";
+
+// get facebook years
+const years = Array.from(
+  {
+    length: new Date().getFullYear() - 1900,
+  },
+  (_, i) => 1901 + i
+).reverse();
+
+// console.log(years);
 
 const Auth = () => {
   const [modal, setModal] = useState(false);
+  const [input, setInput] = useState({
+    first_name: "",
+    sur_name: "",
+    moe: "",
+    password: "",
+    day: "",
+    month: "",
+    year: "",
+    gender: "",
+  });
+
+  const [border, setBorder] = useState({
+    first_name: true,
+    sur_name: true,
+    moe: true,
+    password: true,
+    day: true,
+    month: true,
+    year: true,
+    gender: true,
+  });
+
+  // handleInputChange
+  const handleInputChange = (e) => {
+    setInput((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // handleBlur
+  const handleInputBlur = (e) => {
+    if (e.target.value == "") {
+      setBorder((prevState) => ({
+        ...prevState,
+        [e.target.name]: false,
+      }));
+    } else {
+      setBorder((prevState) => ({
+        ...prevState,
+        [e.target.name]: true,
+      }));
+    }
+  };
+
+  // handleUserReg
+  const handleUserReg = (e) => {
+    e.preventDefault();
+
+    if (
+      !input.first_name ||
+      !input.sur_name ||
+      !input.moe ||
+      !input.password ||
+      !input.day ||
+      !input.month ||
+      !input.year ||
+      !input.gender
+    ) {
+      createToast("All fields are required");
+      // Swal.fire("error");
+    } else if (!isValidEmail(input.moe) && !isValidMobile(input.moe)) {
+      createToast("Invalid email or phone");
+    } else {
+      //clear input field
+      setInput({
+        first_name: "",
+        sur_name: "",
+        moe: "",
+        password: "",
+      });
+      createToast("Data stable", "success");
+    }
+  };
 
   return (
     <>
@@ -13,13 +106,140 @@ const Auth = () => {
 
       {modal && (
         <Modal hide={setModal}>
-          <form action="" className="sign-up-form">
+          <form onSubmit={handleUserReg} className="sign-up-form">
             <div className="h-form">
-              <input type="text" placeholder="First name" />
-              <input type="text" placeholder="Surname" />
+              <input
+                className={border.first_name ? "" : "red-border"}
+                type="text"
+                placeholder="First name"
+                value={input.first_name}
+                name="first_name"
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+              />
+              <input
+                className={border.sur_name ? "" : "red-border"}
+                type="text"
+                placeholder="Surname"
+                value={input.sur_name}
+                name="sur_name"
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+              />
             </div>
-            <input type="text" placeholder="Mobile number or email address" />
-            <input type="text" placeholder="New password" />
+            <input
+              className={border.moe ? "" : "red-border"}
+              type="text"
+              placeholder="Mobile number or email address"
+              value={input.moe}
+              name="moe"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+            />
+            <input
+              className={border.password ? "" : "red-border"}
+              type="text"
+              placeholder="New password"
+              value={input.password}
+              name="password"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+            />
+
+            <div className="reg-extra">
+              <span className="reg-extra-title">
+                Date of birth <FaCircleQuestion />
+              </span>
+              <div className="reg-extra-opt">
+                <select id="" name="day" onChange={handleInputChange}>
+                  <option value="">Day</option>
+                  {day?.map((item, index) => (
+                    <option
+                      value={item}
+                      key={index}
+                      selected={new Date().getDate() == item ? true : false}
+                    >
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <select id="" name="month" onChange={handleInputChange}>
+                  <option value="">Month</option>
+
+                  {month?.map((item, index) => (
+                    <option
+                      value={item}
+                      key={index}
+                      selected={new Date().getMonth() == index ? true : false}
+                    >
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <select id="" name="year" onChange={handleInputChange}>
+                  <option value="">Year</option>
+
+                  {years?.map((item, index) => (
+                    <option
+                      value={item}
+                      key={index}
+                      selected={new Date().getFullYear() == item ? true : false}
+                    >
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="reg-extra">
+              <span className="reg-extra-title">
+                Gender <FaCircleQuestion />
+              </span>
+              <div className="reg-extra-opt">
+                <label>
+                  <span>Female</span>
+                  <input
+                    type="radio"
+                    name="gender"
+                    id=""
+                    value="Female"
+                    onChange={handleInputChange}
+                  />
+                </label>
+                <label>
+                  <span>Male</span>
+                  <input
+                    type="radio"
+                    name="gender"
+                    id=""
+                    value="Male"
+                    onChange={handleInputChange}
+                  />
+                </label>
+                <label>
+                  <span>Custom</span>
+                  <input
+                    type="radio"
+                    name="gender"
+                    id=""
+                    value="Custom"
+                    onChange={handleInputChange}
+                  />
+                </label>
+              </div>
+            </div>
+
+            <p>
+              People who use our service may have uploaded your contact
+              information to Facebook. <Link>Learn more.</Link>
+            </p>
+            <p>
+              By clicking Sign Up, you agree to our <Link>Terms</Link>,{" "}
+              <Link>Privacy Policy</Link> and <Link>Cookies Policy</Link>. You
+              may receive SMS notifications from us and can opt out at any time.
+            </p>
+            <button type="submit">Sign Up</button>
           </form>
         </Modal>
       )}

@@ -24,7 +24,12 @@ const years = Array.from(
 // console.log(years);
 
 const Auth = () => {
+  // state for show/hide modal (userReg)
   const [modal, setModal] = useState(false);
+
+  /**
+   * user registration form management
+   */
   const [input, setInput] = useState({
     first_name: "",
     sur_name: "",
@@ -36,6 +41,7 @@ const Auth = () => {
     gender: "",
   });
 
+  // state for handle input Blur
   const [border, setBorder] = useState({
     first_name: true,
     sur_name: true,
@@ -47,7 +53,7 @@ const Auth = () => {
     gender: true,
   });
 
-  // handleInputChange
+  // handle InputChange of user registration form
   const handleInputChange = (e) => {
     setInput((prevState) => ({
       ...prevState,
@@ -55,7 +61,7 @@ const Auth = () => {
     }));
   };
 
-  // handleBlur
+  // handle input Blur
   const handleInputBlur = (e) => {
     if (e.target.value == "") {
       setBorder((prevState) => ({
@@ -70,7 +76,7 @@ const Auth = () => {
     }
   };
 
-  // handleUserReg
+  // handle UserReg
   const handleUserReg = (e) => {
     e.preventDefault();
 
@@ -96,6 +102,38 @@ const Auth = () => {
         moe: "",
         password: "",
       });
+      createToast("Data stable", "success");
+    }
+  };
+
+  /**
+   * user log in form management
+   */
+  const [loginInput, setloginInput] = useState({
+    moe: "",
+    password: "",
+  });
+
+  // handle InputChange of user lohin form
+  const handleLoginInputChange = (e) => {
+    setloginInput((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // handle userLogin
+  const handleLoginForm = (e) => {
+    e.preventDefault();
+
+    if (!loginInput.moe || !loginInput.password) {
+      createToast("All fields are required");
+    } else if (
+      !isValidEmail(loginInput.moe) &&
+      !isValidMobile(loginInput.moe)
+    ) {
+      createToast("Invalid email address or mobile");
+    } else {
       createToast("Data stable", "success");
     }
   };
@@ -257,14 +295,26 @@ const Auth = () => {
           </div>
           <div className="fb-auth-right">
             <div className="fb-auth-box">
-              <form action="">
+              <form onSubmit={handleLoginForm}>
                 <input
                   type="text"
                   placeholder="Email address or phone number"
+                  name="moe"
+                  value={loginInput.moe}
+                  onChange={handleLoginInputChange}
                 />
-                <input type="password" placeholder="Password" />
-                <button className="login-btn">Log in</button>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={loginInput.password}
+                  onChange={handleLoginInputChange}
+                />
+                <button type="submit" className="login-btn">
+                  Log in
+                </button>
               </form>
+
               <Link to="/">Forgotten password?</Link>
               <div className="divider"></div>
               <button className="create-new-btn" onClick={() => setModal(true)}>
